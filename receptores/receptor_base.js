@@ -53,7 +53,15 @@ module.exports = function (options) {
 					// Saluo login
 					//client.write('40400012645040311790274000014F120D0A', 'hex');
 					model.exec(d.toString());
-					console.log(model.tramas);
+					var trama = null;
+					for (var i = 0; i < model.tramas.length; i++) {
+						trama = model.tramas[i];
+						trama.receptor = module.puerto;
+						trama.puerto = client.remotePort;
+						trama.ip = client.remoteAddress;
+						console.log(trama);
+						socket.emit('trama', trama);
+					}
 				});
 
 				client.once("close", function () {

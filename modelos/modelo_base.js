@@ -329,6 +329,10 @@ module.exports = function () {
 var Trama = function () {
 	this.trama = '';
 
+	this.puerto = null;
+	this.ip = null;
+	this.receptor = null;
+
 	this.ES_TRAMA_POSICION = false;
 	this.ES_TRAMA_EVENTO = false;
 	this.ES_TRAMA_LOGIN = false;
