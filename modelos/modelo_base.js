@@ -154,6 +154,7 @@ module.exports = function () {
 					}
 				}
 			}
+			module.tramas[module.trams_found] = t;
 			if (!identified)
 				throw ExceptionIdentificacion("Trama no identificada");
 		},
@@ -163,7 +164,7 @@ module.exports = function () {
 		process: function (str, segments, initial_tram) {
 			for (var i = 0; i < segments.length; i++) {
 				var segment = segments[i];
-				if (!segment.when || (typeof segment.when == 'function' && segment.when(module))) {
+				if (!segment.when || (typeof segment.when == 'function' && segment.when(module.tramas[module.trams_found]))) {
 					switch(segment.tipo) {
 						case MODO_SUBSTR:
 							module.convertVal(str.substr(segment.start, segment.lngt), segment);
@@ -171,16 +172,16 @@ module.exports = function () {
 						case MODO_REGEX:
 							var match;
 							while(match = segment.regex.exec(str)) {
-								if (!match[i]) continue;
+								if (!match[0]) continue;
 								if (initial_tram) {
 									var t = new Trama();
-									t.trama = match[i];
+									t.trama = match[0];
 									module.tramas[module.trams_found] = t;
-									//module.identify();
+									module.identify();
 								}
-								for (i in segment.matches) {
+								for (j in segment.matches) {
 									//log(match[i]);
-									module.convertVal(match[i], segment.matches[i]);
+									module.convertVal(match[j], segment.matches[j]);
 								}
 								if (initial_tram) {
 									module.trams_found++;
@@ -195,6 +196,9 @@ module.exports = function () {
 							}
 							break;
 					}
+					//console.log('Trama ', module.trams_found, ' Pasó la condición ', segment.tipo, ' Trama: ', str);
+				} else {
+					//console.log('Trama ', module.trams_found, ' No pasó la condición');
 				}
 			}
 		},
@@ -288,7 +292,11 @@ module.exports = function () {
 			}
 		},
 
-		init: function (trama) {
+		share: function () {
+
+		},
+
+		exec: function (trama) {
 			if (options.upper) {
 				trama = trama.toUpperCase();
 			}
@@ -304,14 +312,11 @@ module.exports = function () {
 
 				module.identify();
 
-				console.log("ES_TRAMA_EVENTO: ", module.ES_TRAMA_EVENTO);
-				console.log("ES_TRAMA_POSICION: ", module.ES_TRAMA_POSICION);
-				console.log("ES_TRAMA_LOGIN: ", module.ES_TRAMA_LOGIN);
-				console.log("ES_TRAMA_RESPUESTA: ", module.ES_TRAMA_RESPUESTA);
-
 				module.process(module.trama, options.segments, true);
 
-				console.log(module.tramas);
+				//module.restrictions();
+				
+				module.share();
 			} catch(e) {
 				console.error(e);
 			}

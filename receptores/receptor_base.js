@@ -1,6 +1,22 @@
 var config = require("./../config.json");
 var helpers = require("./../lib/helpers");
 var net = require("net");
+var socket = require('socket.io-client')('http://localhost:3006');
+
+/**
+ *  MODELOS
+ */
+global.MODEL_GT08 = 1, global.MODEL_TK310 = 2, global.MODEL_SP8750P = 3;
+global.MODEL_ARRAY = {
+	1: 'GT08',
+	2: 'TK310',
+	3: 'SKYPATROL 8750+'
+}
+global.MODEL_FILE_ARRAY = {
+	1: 'modelo_GT08',
+	2: 'modelo_GTO8',
+	3: 'modelo_SP8750P'
+}
 
 module.exports = function (options) {
 	if (!options) options = {};
@@ -16,6 +32,14 @@ module.exports = function (options) {
 		tramas_total: 0,
 
 		init: function() {
+			try {
+			    var model = require('./../modelos/' + MODEL_FILE_ARRAY[options.model]);
+			} catch (ex) {
+			    throw ex;
+			}
+
+			console.log(model.tramas);
+
 			var server = net.createServer();
 
 			server.on("connection", function (client) {
@@ -26,40 +50,10 @@ module.exports = function (options) {
 				client.setEncoding('hex');
 
 				client.on("data", function (d) {
-					d = d.replace('c382c2', '');
-					console.log('Trama #' + module.tramas_total + ' recibida: \n');
-					console.log('HEX:\n' + d.toString());
-					console.log('\n');
-					console.log('ASCII:\n' + Hex2Ascii(d));
-					console.log('\n');
-
-					if (d.toString().substr(22, 4) == '5000') {
-						client.write('40400012645040311790274000014F120D0A', 'hex');
-					}
-
-					if (d.toString().substr(22, 4) == '4115') {
-						respuesta = true;
-						console.log('Trama de respuesta\n');
-					} else {
-						//d.toString().substr(8, 14) == '64504031038132'
-						if ((respuesta || module.tramas_total == 1 || (module.tramas_total % 4 == 0 && !respuesta))) {
-							/*setTimeout(function(){
-								var trama = apagado ? '4040001662170019750163411500020202020D4B0D0A' : '4040001662170019750163411501020202020D4B0D0A';
-								apagado = !apagado;
-								console.log('Enviando comando:\n\n' + trama + '\n');
-								// Convirtiendo a ascii
-								//trama = Hex2Ascii(trama); //Si no lo envío en ascii, lo tomará como tal y convierte lo que está en hexa en hexa nuevamente
-								// Enviando como hex
-								client.write(trama, 'hex', function (){
-									//client.write('@@001264504031179027410514c543\r\n');
-									console.log('Comando enviado. Esperando respuesta...\n\n');
-								});
-								respuesta = false;
-							}, 3000);*/
-						}
-					}
-
-					module.tramas_total++;
+					// Saluo login
+					//client.write('40400012645040311790274000014F120D0A', 'hex');
+					model.exec(d.toString());
+					console.log(model.tramas);
 				});
 
 				client.once("close", function () {
