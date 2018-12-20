@@ -129,7 +129,7 @@ modelo.prepare({
 								9: {
 									var: SEGM_FECHA,
 									format: function (fecha) {
-										return fecha.replace(/(.{2})/g, '$1/').substr(0, 8);
+										return fecha.replace(/([0-9]{2})([0-9]{2})([0-9]{2})/g, '20$3-$2-$1');
 									}
 								},
 								//10 propio de TK310, valores desconocidos: ,,,A*7D
@@ -175,10 +175,6 @@ modelo.prepare({
 				}
 			}
 
-		}
-	],
-	after_data: [
-		function (gps) {
 		}
 	],
 	restrictions: [

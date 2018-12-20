@@ -292,6 +292,20 @@ module.exports = function () {
 			module.tramas[module.trams_found] = t;
 		},
 
+		after_data: function () {
+			for (var i in module.tramas) {
+				var t = module.tramas[i];
+				if (t.CARD_LAT == 'S') {
+					t.LAT = '-' + t.LAT
+				}
+				if (t.CARD_LNG == 'W') {
+					t.LNG = '-' + t.LNG
+				}
+				t.DATETIME = t.FECHA + ' ' + t.HORA;
+				module.tramas[i] = t;
+			}
+		},
+
 		share: function () {
 
 		},
@@ -316,6 +330,10 @@ module.exports = function () {
 				module.identify();
 
 				module.process(module.trama, options.segments, true);
+
+				module.after_data();
+
+				console.log(module.tramas);
 
 				//module.restrictions();
 				
@@ -368,6 +386,7 @@ var Trama = function () {
 	this.BAT_INTERNA = null;
 	this.BAT_EXTERNA = null;
 	this.NUM_SATELITES = null;
+	this.DATETIME = null;
 }
 
 function log(str) {
