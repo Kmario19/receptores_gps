@@ -159,7 +159,6 @@ module.exports = function () {
 				throw ExceptionIdentificacion("Trama no identificada");
 		},
 
-		//(\d+(?:\.\d+)?)?,(A|V)?,(\d{4}.\d+)?,(N|S)?,(\d{5}.\d+)?,(W|E)?,(\d+(?:\.\d+)?)?,(\d+(?:\.\d+)?)?,(\d{6})([\w,\*]*)\|(\d+(?:\.\d+)?)\|(\d+(?:\.\d+)?)\|(\w{4})?\|(?:(\w+)?,(\w+))?\|(\d+)?
 		trams_found: 0,
 		process: function (str, segments, initial_tram) {
 			for (var i = 0; i < segments.length; i++) {
@@ -290,6 +289,7 @@ module.exports = function () {
 				case SEGM_GRUPO: /*Nada*/ break;
 				default: throw ExceptionProcesamiento("Variable '" + variable + "' no definida");
 			}
+			module.tramas[module.trams_found] = t;
 		},
 
 		share: function () {
@@ -297,6 +297,9 @@ module.exports = function () {
 		},
 
 		exec: function (trama) {
+			module.tramas = [];
+			module.trams_found = 0;
+			
 			if (options.upper) {
 				trama = trama.toUpperCase();
 			}

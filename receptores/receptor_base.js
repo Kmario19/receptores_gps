@@ -1,7 +1,11 @@
 var config = require("./../config.json");
 var helpers = require("./../lib/helpers");
 var net = require("net");
-var socket = require('socket.io-client')('http://localhost:3006');
+var socket = require('socket.io-client')('http://'+config.SOCKET_SERVER+':'+config.SOCKET_PORT);
+
+socket.on('connect', function () {
+	console.log('Conectado al SOCKET');
+});
 
 /**
  *  MODELOS
@@ -26,7 +30,7 @@ module.exports = function (options) {
 	}
 
 	var module = {
-		ip: 	options.ip || config.SERVER_ADD,
+		ip: 	options.ip || config.DB_SERVER,
 		puerto: options.puerto,
 		server: null,
 		tramas_total: 0,
@@ -38,8 +42,6 @@ module.exports = function (options) {
 			    throw ex;
 			}
 
-			console.log(model.tramas);
-
 			var server = net.createServer();
 
 			server.on("connection", function (client) {
@@ -50,7 +52,8 @@ module.exports = function (options) {
 				client.setEncoding('hex');
 
 				client.on("data", function (d) {
-					// Saluo login
+					d = d.replace('c382c2', '');
+					// Saludo login
 					//client.write('40400012645040311790274000014F120D0A', 'hex');
 					model.exec(d.toString());
 					var trama = null;

@@ -177,6 +177,10 @@ modelo.prepare({
 
 		}
 	],
+	after_data: [
+		function (gps) {
+		}
+	],
 	restrictions: [
 		function (gps) {
 

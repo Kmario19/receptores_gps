@@ -1,6 +1,5 @@
 var receptor  = require('./receptor_base')({
-	ip: 'localhost',
-	puerto: 8502,
+	puerto: 8512,
 	model: MODEL_GT08
 });
 
