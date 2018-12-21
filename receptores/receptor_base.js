@@ -7,6 +7,17 @@ socket.on('connect', function () {
 	console.log('Conectado al SOCKET');
 });
 
+var Pool = require('pg').Pool;
+var pool = new Pool({
+	user		: 'postgres',
+	database 	: 'postgres',
+	password 	: 'GeoMgr2017..',
+	host		: '45.63.83.222',
+	port 		: 5432,
+	max			: 1,
+	idleTimeoutMillis : 30000
+});
+
 /**
  *  MODELOS
  */
@@ -64,6 +75,7 @@ module.exports = function (options) {
 						trama.ip = client.remoteAddress;
 						console.log(trama);
 						socket.emit('trama', trama);
+						module.send_db(trama);
 					}
 				});
 
@@ -82,7 +94,21 @@ module.exports = function (options) {
 
 			module.server = server;
 
-		}
+		},
+
+		send_db: function (trama) {
+			pool.connect((err, pgClient, done) => {
+				if (err)
+					return console.error('Error PG connect: ', err);
+
+				pgClient.query('SELECT funseguimientosatelital2($1) as response', [JSON.stringify(trama)], (err, res) => {
+					if (err)
+						return console.error('Error PG select: ', err);
+					console.log(res.rows[0].response);
+					pgClient.release();
+				})
+			});
+		} 
 	}
 
 	return module;

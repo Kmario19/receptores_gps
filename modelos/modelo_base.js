@@ -146,10 +146,10 @@ module.exports = function () {
 				if (valida) {
 					identified = true;
 					switch(tt.tipo) {
-						case TRAMA_POSICION: t.ES_TRAMA_POSICION = true; break;
-						case TRAMA_EVENTO: t.ES_TRAMA_EVENTO = true; break;
-						case TRAMA_LOGIN: t.ES_TRAMA_LOGIN = true; break;	
-						case TRAMA_RESPUESTA: t.ES_TRAMA_RESPUESTA = true; break;
+						case TRAMA_POSICION: t.ES_TRAMA_POSICION = 1; break;
+						case TRAMA_EVENTO: t.ES_TRAMA_EVENTO = 1; break;
+						case TRAMA_LOGIN: t.ES_TRAMA_LOGIN = 1; break;	
+						case TRAMA_RESPUESTA: t.ES_TRAMA_RESPUESTA = 1; break;
 						default: throw ExceptionIdentificacion("Tipo de trama " + tt.tipo + " inválida");
 					}
 				}
@@ -302,6 +302,23 @@ module.exports = function () {
 					t.LNG = '-' + t.LNG
 				}
 				t.DATETIME = t.FECHA + ' ' + t.HORA;
+				// Compatibilidad eventos POSTGRESQL
+				t.EVENTOS.push('8'); // Posición
+				var estado_motor = t.IN_OUTS[4];
+				if (!estado_motor) {
+					estado_motor = t.IN_OUTS[3];
+				}
+				t.EVENTOS.push(estado_motor);
+				t.IGNICION = estado_motor;
+				if (t.IN_OUTS[8] == 1) {
+					t.EVENTOS.push('10'); // Botón de pánico
+				} else {
+					t.EVENTOS.push('19'); // Volco arriba
+				}
+				if (t.ES_TRAMA_EVENTO) {
+					t.EVENTOS.push(t.EVENTO+''+t.COD_EVENTO);
+				}
+				t.EVENTOS = t.EVENTOS.join(',');
 				module.tramas[i] = t;
 			}
 		},
@@ -354,14 +371,16 @@ var Trama = function () {
 	this.ip = null;
 	this.receptor = null;
 
-	this.ES_TRAMA_POSICION = false;
-	this.ES_TRAMA_EVENTO = false;
-	this.ES_TRAMA_LOGIN = false;
-	this.ES_TRAMA_RESPUESTA = false;
+	this.ES_TRAMA_POSICION = 0;
+	this.ES_TRAMA_EVENTO = 0;
+	this.ES_TRAMA_LOGIN = 0;
+	this.ES_TRAMA_RESPUESTA = 0;
 
+	this.IGNICION = null;
 	this.LONGITUD = null;
 	this.IMEI = null;
 	this.EVENTO = null;
+	this.EVENTOS = [];
 	this.COD_EVENTO = null;
 	this.HORA = null;
 	this.SENAL = null;
