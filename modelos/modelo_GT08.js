@@ -83,7 +83,7 @@ modelo.prepare({
 								1: {
 									var: SEGM_HORA,
 									format: function (hora) {
-										return parseFloat(hora).toFixed(0).replace(/(\d)(?=(\d{2})+$)/g, '$1:');
+										return ('0' + parseFloat(hora).toFixed(0).replace(/(\d)(?=(\d{2})+$)/g, '$1:')).substr(-8);
 									}
 								},
 								2: {
@@ -181,7 +181,52 @@ modelo.prepare({
 		function (gps) {
 
 		}
-	]
+	],
+	buildCommand: function(track, command, value) {
+		var header = "4040";
+		var data = '';
+
+        // ENCENDIDO Y APAGADO SEGURO ES CON EL CÓDIGO 4114
+        switch (command) {
+            // Encender vehículo:           4115 0002020202
+            case COMMAND_ENCENDIDO:
+                data = "41150002020202";
+                break;
+            // Apagar vehiculo:             4115 0102020202
+            case COMMAND_APAGADO:
+                data = "41150102020202";
+                break;
+            // Posición actual:
+            case COMMAND_POSICION:
+                data = "4101";
+                break;
+            // Fijar intervalo de tiempo    4102 002D => DEC2HEX
+            case COMMAND_INTERVALO:
+                //value = round((int)value/10); // Unidades de 10
+                data = "4102" + helpers.completeHex(helpers.Dec2Hex(value), 4);
+                break;
+            // Fijar límite de velocidad    4105 0B => DEC2HEX
+            case COMMAND_LIMITE_VELOCIDAD:
+                //value = round((int)value/10); // Unidades de 10
+                data = "4105" + helpers.Dec2Hex(value);
+                break;
+            // Reiniciar GPS
+            case COMMAND_REINICIO:
+                data = "4110";
+                break;
+            // Firmware
+            case COMMAND_FIRMWARE:
+                data = "9001";
+                break;
+            default:
+				console.warn('Código de comando no implementado');
+				return '';
+        }
+
+        var length = helpers.completeHex(helpers.Dec2Hex((data.length / 2) + 15), 4);
+
+        return header + length + track.IMEI + data + "AB010D0A";
+    }
 });
 
 module.exports = modelo;

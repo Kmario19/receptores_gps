@@ -38,6 +38,21 @@ global.MODO_ARRAY = {
 }
 
 /**
+ * COMANDOS DISPONIBLES
+ */
+global.COMMAND_POSICION = 1, global.COMMAND_ENCENDIDO = 2, global.COMMAND_APAGADO = 3, global.COMMAND_REINICIO = 4,
+global.COMMAND_INTERVALO = 5, global.COMMAND_LIMITE_VELOCIDAD = 6, global.COMMAND_FIRMWARE = 7;
+global.COMMAND_ARRAY = {
+	1: 'POSICION',
+	2: 'ENCENDIDO',
+	3: 'APAGADO',
+	4: 'REINICIO',
+	5: 'INTERVALO GPS',
+	6: 'LIMITE VELOCIDAD',
+	7: 'FIRMWARE'
+}
+
+/**
  * SEGMENTOS DE TRAMA
  */
 global.SEGM_GRUPO = 'GRUPO';
@@ -358,7 +373,10 @@ module.exports = function () {
 			} catch(e) {
 				console.error(e);
 			}
-		}
+		},
+		buildCommand: function(track, command, value) {
+			return options.buildCommand(track, command, value);
+		} 
 	}
 
 	return module;

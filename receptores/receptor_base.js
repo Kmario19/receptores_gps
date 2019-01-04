@@ -33,6 +33,8 @@ global.MODEL_FILE_ARRAY = {
 	3: 'modelo_SP8750P'
 }
 
+var trackers = [];
+
 module.exports = function (options) {
 	if (!options) options = {};
 
@@ -41,8 +43,9 @@ module.exports = function (options) {
 	}
 
 	var module = {
-		ip: 	options.ip || config.DB_SERVER,
+		ip: 	options.ip || config.IP_SERVER,
 		puerto: options.puerto,
+		insert_db: options.insert_db || false,
 		server: null,
 		tramas_total: 0,
 
@@ -57,6 +60,7 @@ module.exports = function (options) {
 
 			server.on("connection", function (client) {
 				var remoteAddress = client.remoteAddress + ":" + client.remotePort;
+				trackers[remoteAddress] = client;
 
 				console.log("Nuevo GPS conectado desde: %s", remoteAddress);
 
@@ -73,13 +77,17 @@ module.exports = function (options) {
 						trama.receptor = module.puerto;
 						trama.puerto = client.remotePort;
 						trama.ip = client.remoteAddress;
+						trama.modelo = MODEL_ARRAY[options.model];
 						console.log(trama);
 						socket.emit('trama', trama);
-						module.send_db(trama);
+						if (options.insert_db) {
+							module.send_db(trama);
+						}
 					}
 				});
 
 				client.once("close", function () {
+					delete trackers[remoteAddress];
 					console.log("Connection from %s closed", remoteAddress);
 				});
 
@@ -93,6 +101,23 @@ module.exports = function (options) {
 			});
 
 			module.server = server;
+
+			socket.on('command', function(track, command, value) {
+				var client = trackers[track.ip + ':' + track.puerto];
+				if (client) {
+					var command_send = model.buildCommand(track, command, value);
+					if (command_send) {
+						try {
+							client.write(command_send, 'hex');
+							console.log('Comando enviado: ', command_send);
+						} catch(e) {
+							console.log(e);
+						}
+					}
+				} else {
+					console.log('No se envio comando, no se encontró cliente');
+				}
+			});
 
 		},
 
