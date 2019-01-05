@@ -317,9 +317,14 @@ module.exports = function () {
 					t.LNG = '-' + t.LNG
 				}
 				// Fecha y Hora -5H
-				var time = new Date(t.FECHA + ' ' + t.HORA);
-				time = new Date(time.getTime() - 1.8e+7);
-				t.DATETIME = (new Date).toISOString().replace('T', ' ').substr(0, 19);
+				var time = null;
+				try {
+					time = new Date(t.FECHA + ' ' + t.HORA + ' UTC');
+					time.setTime(time.getTime() - 1.8e+7);
+				} catch(e) {
+					time = new Date();
+				}
+				t.DATETIME = time.toISOString().replace('T', ' ').substr(0, 19);
 				var parts = t.DATETIME.split(' ');
 				t.FECHA = parts[0];
 				t.HORA = parts[1];
@@ -337,7 +342,7 @@ module.exports = function () {
 					t.EVENTOS.push('19'); // Volco arriba
 				}
 				if (t.ES_TRAMA_EVENTO) {
-					t.EVENTOS.push(t.EVENTO+''+t.COD_EVENTO);
+					t.EVENTOS.push(t.EVENTO);
 				}
 				t.EVENTOS = t.EVENTOS.join(',');
 				module.tramas[i] = t;
