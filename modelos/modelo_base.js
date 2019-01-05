@@ -318,7 +318,7 @@ module.exports = function () {
 				}
 				// Fecha y Hora -5H
 				var time = new Date(t.FECHA + ' ' + t.HORA);
-				time = new Date(time.getTime() - (time.getTimezoneOffset() * 60000));
+				time = new Date(time.getTime() - 1.8e+7);
 				t.DATETIME = (new Date).toISOString().replace('T', ' ').substr(0, 19);
 				var parts = t.DATETIME.split(' ');
 				t.FECHA = parts[0];
