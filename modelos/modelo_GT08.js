@@ -83,7 +83,7 @@ modelo.prepare({
 								1: {
 									var: SEGM_HORA,
 									format: function (hora) {
-										return ('0' + parseFloat(hora).toFixed(0).replace(/(\d)(?=(\d{2})+$)/g, '$1:')).substr(-8);
+										return parseFloat(hora).toFixed(0).replace(/(\d)(?=(\d{2})+$)/g, '$1:');
 									}
 								},
 								2: {

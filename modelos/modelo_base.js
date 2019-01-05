@@ -316,7 +316,13 @@ module.exports = function () {
 				if (t.CARD_LNG == 'W') {
 					t.LNG = '-' + t.LNG
 				}
-				t.DATETIME = t.FECHA + ' ' + t.HORA;
+				// Fecha y Hora -5H
+				var time = new Date(t.FECHA + ' ' + t.HORA);
+				time = new Date(time.getTime() - (time.getTimezoneOffset() * 60000));
+				t.DATETIME = (new Date).toISOString().replace('T', ' ').substr(0, 19);
+				var parts = t.DATETIME.split(' ');
+				t.FECHA = parts[0];
+				t.HORA = parts[1];
 				// Compatibilidad eventos POSTGRESQL
 				t.EVENTOS.push('8'); // Posición
 				var estado_motor = t.IN_OUTS[4];
