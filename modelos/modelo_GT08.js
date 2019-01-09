@@ -124,7 +124,10 @@ modelo.prepare({
 									}
 								},
 								8: {
-									var: SEGM_ORIENTACION
+									var: SEGM_ORIENTACION,
+									format: function (deg) {
+										return deg || 0;
+									} 
 								},
 								9: {
 									var: SEGM_FECHA,

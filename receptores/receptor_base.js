@@ -12,7 +12,7 @@ var pool = new Pool({
 	user		: 'postgres',
 	database 	: 'postgres',
 	password 	: 'GeoMgr2017..',
-	host		: '45.63.83.222',
+	host		: '45.32.133.171',
 	port 		: 5432,
 	max			: 1,
 	idleTimeoutMillis : 30000
