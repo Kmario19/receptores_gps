@@ -317,12 +317,13 @@ module.exports = function () {
 					t.LNG = '-' + t.LNG
 				}
 				// Fecha y Hora -5H
-				var time = null;
-				try {
-					time = new Date(t.FECHA + ' ' + t.HORA + ' UTC');
-					time.setTime(time.getTime() - 1.8e+7);
-				} catch(e) {
-					time = new Date();
+				var time = new Date();
+				if (t.FECHA.length == 10 && t.HORA.length == 8)
+					try {
+						time = new Date(t.FECHA + ' ' + t.HORA + ' UTC');
+						time.setTime(time.getTime() - 1.8e+7);
+					} catch(e) {
+					}
 				}
 				t.DATETIME = time.toISOString().replace('T', ' ').substr(0, 19);
 				var parts = t.DATETIME.split(' ');
