@@ -78,12 +78,12 @@ modelo.prepare({
 					segments: [
 						{
 							tipo: MODO_REGEX,
-							regex: /(\d+(?:\.\d+)?)?,(A|V)?,(\d{4}.\d+)?,(N|S)?,(\d{5}.\d+)?,(W|E)?,(\d+(?:\.\d+)?)?,(\d+(?:\.\d+)?)?,(\d{6})([\w,\*]*)\|(\d+(?:\.\d+)?)\|(\d+(?:\.\d+)?)\|(\w{4})?\|(?:(\w+)?,(\w+))?\|(\d+)?/gi,
+							regex: /(\d+)(?:\.?\d*),(A|V)?,(\d{4}.\d+)?,(N|S)?,(\d{5}.\d+)?,(W|E)?,(\d+(?:\.\d+)?)?,(\d+(?:\.\d+)?)?,(\d{6})([\w,\*]*)\|(\d+(?:\.\d+)?)\|(\d+(?:\.\d+)?)\|(\w{4})?\|(?:(\w+)?,(\w+))?\|(\d+)?/gi,
 							matches: {
 								1: {
 									var: SEGM_HORA,
 									format: function (hora) {
-										return parseFloat(hora).toFixed(0).replace(/(\d)(?=(\d{2})+$)/g, '$1:');
+										return hora.replace(/(\d)(?=(\d{2})+$)/g, '$1:');
 									}
 								},
 								2: {
@@ -126,7 +126,7 @@ modelo.prepare({
 								8: {
 									var: SEGM_ORIENTACION,
 									format: function (deg) {
-										return deg || 0;
+										return parseFloat(deg || 0);
 									} 
 								},
 								9: {

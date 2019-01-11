@@ -1,7 +1,7 @@
 var config = require("./../config.json");
 var helpers = require("./../lib/helpers");
 var net = require("net");
-var socket = require('socket.io-client')('http://'+config.SOCKET_SERVER+':'+config.SOCKET_PORT);
+var socket = require('socket.io-client')(config.SOCKET_SERVER+':'+config.SOCKET_PORT, { transports: ['websocket'], rejectUnauthorized: false });
 
 socket.on('connect', function () {
 	console.log('Conectado al SOCKET');
@@ -81,7 +81,9 @@ module.exports = function (options) {
 						console.log(trama);
 						socket.emit('trama', trama);
 						if (options.insert_db) {
-							module.send_db(trama);
+							if (!trama.ES_TRAMA_LOGIN && trama.LAT && trama.LNG) {
+								module.send_db(trama);
+							}
 						}
 					}
 				});
