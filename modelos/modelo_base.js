@@ -377,8 +377,6 @@ module.exports = function () {
 
 				module.after_data();
 
-				console.log(module.tramas);
-
 				//module.restrictions();
 				
 				module.share();

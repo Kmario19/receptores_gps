@@ -78,7 +78,6 @@ module.exports = function (options) {
 						trama.puerto = client.remotePort;
 						trama.ip = client.remoteAddress;
 						trama.modelo = MODEL_ARRAY[options.model];
-						console.log(trama);
 						socket.emit('trama', trama);
 						if (module.insert_db) {
 							if (!trama.ES_TRAMA_LOGIN && trama.LAT && trama.LNG) {
