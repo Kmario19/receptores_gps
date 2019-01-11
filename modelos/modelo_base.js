@@ -318,7 +318,7 @@ module.exports = function () {
 				}
 				// Fecha y Hora -5H
 				var time = new Date();
-				if (t.FECHA.length == 10 && t.HORA.length >= 4)
+				if (t.FECHA.length == 10 && t.HORA.length >= 4) {
 					try {
 						time = new Date(t.FECHA + ' ' + t.HORA + ' UTC');
 						time.setTime(time.getTime() - 1.8e+7);
