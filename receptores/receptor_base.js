@@ -45,7 +45,7 @@ module.exports = function (options) {
 	var module = {
 		ip: 	options.ip || config.IP_SERVER,
 		puerto: options.puerto,
-		insert_db: options.insert_db || false,
+		insert_db: config.DB_INSERT || false,
 		server: null,
 		tramas_total: 0,
 
