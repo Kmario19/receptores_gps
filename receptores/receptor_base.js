@@ -89,6 +89,7 @@ module.exports = function (options) {
 
 				client.once("close", function () {
 					delete trackers[remoteAddress];
+					socket.emit('track_disconnect', {puerto : client.remotePort, ip : client.remoteAddress});
 					console.log("Connection from %s closed", remoteAddress);
 				});
 
