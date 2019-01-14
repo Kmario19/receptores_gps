@@ -120,7 +120,7 @@ modelo.prepare({
 								7: {
 									var: SEGM_VELOCIDAD,
 									format: function (vel) {
-										return parseFloat(vel) * 1.852; // Nudos a Km/h
+										return (parseFloat(vel) * 1.852).toFixed(2); // Nudos a Km/h
 									}
 								},
 								8: {
@@ -169,7 +169,7 @@ modelo.prepare({
 								16: {
 									var: SEGM_ODOMETRO,
 									format: function (odom) {
-										return parseFloat(odom);
+										return (parseFloat(odom) / 1000).toFixed(2);
 									} 
 								}
 							}

@@ -317,22 +317,26 @@ module.exports = function () {
 					t.LNG = '-' + t.LNG
 				}
 				// Fecha y Hora -5H
-				var time = new Date();
+				var time = new Date(), _time = null;
 				if (t.FECHA.length == 10 && t.HORA.length >= 4) {
 					try {
-						time = new Date(t.FECHA + ' ' + t.HORA + ' UTC');
-						time.setTime(time.getTime() - 1.8e+7);
+						_time = new Date(t.FECHA + ' ' + t.HORA + ' UTC');
+						_time.setTime(_time.getTime() - 1.8e+7);
+						// Si son años diferentes, se deja la fecha actual
+						if (time.getFullYear() == _time.getFullYear())
+							time = _time;
 					} catch(e) {
 					}
 				}
 				t.DATETIME = time.toISOString().replace('T', ' ').substr(0, 19);
-				var parts = t.DATETIME.split(' ');
+				// Se comenta para mantener la info que envía el gps
+				/*var parts = t.DATETIME.split(' ');
 				t.FECHA = parts[0];
-				t.HORA = parts[1];
+				t.HORA = parts[1];*/
 				// Compatibilidad eventos POSTGRESQL
 				t.EVENTOS.push('8'); // Posición
 				var estado_motor = t.IN_OUTS[4];
-				if (!estado_motor) {
+				if (estado_motor == '0') {
 					estado_motor = t.IN_OUTS[3];
 				}
 				t.EVENTOS.push(estado_motor);
