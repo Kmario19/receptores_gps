@@ -45,7 +45,11 @@ modelo.prepare({
 			modo: MODO_SUBSTR,
 			str: '5000',
 			start: 22,
-
+		},
+		{
+			tipo: TRAMA_RESPUESTA,
+			modo: MODO_REGEX,
+			regex: /2424[0-9A-Z]{4}([0-9]{14})([0-9]{6})[0-9A-Z]{4}0D0A/gi
 		}
 	],
 	segments: [

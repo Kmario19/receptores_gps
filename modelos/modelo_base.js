@@ -145,7 +145,7 @@ module.exports = function () {
 						valida = t.trama.substr(tt.start, tt.str.length) == tt.str;
 						break;
 					case MODO_REGEX:
-						valida = (new RegExp(tt.ppt)).test(t.trama);
+						valida = (new RegExp(tt.regex)).test(t.trama);
 						break;
 					case MODO_FUNCTION:
 						if (typeof tt.exec == 'function') {
@@ -171,7 +171,7 @@ module.exports = function () {
 			}
 			module.tramas[module.trams_found] = t;
 			if (!identified)
-				throw ExceptionIdentificacion("Trama no identificada");
+				throw ExceptionIdentificacion("Trama no identificada: " + t.trama);
 		},
 
 		trams_found: 0,
