@@ -131,7 +131,7 @@ module.exports = function (options) {
 				pgClient.query('SELECT funseguimientosatelital2($1) as response', [JSON.stringify(trama)], (err, res) => {
 					if (err)
 						return console.error('Error PG select: ', err);
-					console.log(res.rows[0].response);
+					console.log('%s - %s', trama.IMEI, res.rows[0].response);
 					pgClient.release();
 				})
 			});

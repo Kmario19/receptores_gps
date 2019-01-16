@@ -184,6 +184,50 @@ modelo.prepare({
 
 		}
 	],
+	after_data: function(t) {
+		if (t.CARD_LAT == 'S') {
+			t.LAT = '-' + t.LAT
+		}
+		if (t.CARD_LNG == 'W') {
+			t.LNG = '-' + t.LNG
+		}
+		// Fecha y Hora -5H
+		var time = new Date(), _time = null;
+		if (t.FECHA.length == 10 && t.HORA.length >= 4) {
+			try {
+				_time = new Date(t.FECHA + ' ' + t.HORA + ' UTC');
+				// Si son años diferentes, se deja la fecha actual
+				if (time.getFullYear() == _time.getFullYear()) {
+					time = _time;
+				}
+			} catch(e) {
+			}
+		}
+		time.setTime(time.getTime() - 1.8e+7); //-5 horas
+		t.DATETIME = time.toISOString().replace('T', ' ').substr(0, 19);
+		// Se comenta para mantener la info que envía el gps
+		/*var parts = t.DATETIME.split(' ');
+		t.FECHA = parts[0];
+		t.HORA = parts[1];*/
+		// Compatibilidad eventos POSTGRESQL
+		t.EVENTOS.push('8'); // Posición
+		var estado_motor = t.IN_OUTS[4];
+		if (estado_motor == '0') {
+			estado_motor = t.IN_OUTS[3];
+		}
+		t.EVENTOS.push(estado_motor);
+		t.IGNICION = estado_motor;
+		if (t.IN_OUTS[8] == 1) {
+			t.EVENTOS.push('10'); // Botón de pánico
+		} else {
+			t.EVENTOS.push('19'); // Volco arriba
+		}
+		if (t.ES_TRAMA_EVENTO) {
+			t.EVENTOS.push(t.EVENTO);
+		}
+		t.EVENTOS = t.EVENTOS.join(',');
+		return t;
+	},
 	restrictions: [
 		function (gps) {
 
