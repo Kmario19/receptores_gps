@@ -90,6 +90,9 @@ module.exports = function (options) {
 				client.once("close", function () {
 					delete trackers[remoteAddress];
 					socket.emit('track_disconnect', {puerto : client.remotePort, ip : client.remoteAddress});
+					if (module.insert_db) {
+						module.disconnect_track(client.remoteAddress, client.remotePort);
+					}
 					console.log("Connection from %s closed", remoteAddress);
 				});
 
@@ -135,7 +138,22 @@ module.exports = function (options) {
 					pgClient.release();
 				})
 			});
-		} 
+		},
+
+		disconnect_track: function(ip, puerto) {
+			pool.connect((err, pgClient, done) => {
+				if (err)
+					return console.error('Error PG connect: ', err);
+
+				pgClient.query('UPDATE moviles SET conectado =\'N\' WHERE ip = $1 AND puerto = $2 AND receptor_gps = $3',
+				[ip, puerto, module.puerto], (err, res) => {
+					if (err)
+						return console.error('Error PG select: ', err);
+					console.log('Registrado como desconectado');
+					pgClient.release();
+				})
+			});
+		}
 	}
 
 	return module;
