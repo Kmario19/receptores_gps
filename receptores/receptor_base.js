@@ -21,7 +21,7 @@ var pool = new Pool({
 /**
  *  MODELOS
  */
-global.MODEL_GT08 = 1, global.MODEL_TK310 = 2, global.MODEL_SP8750P = 3;
+global.MODEL_GT08 = 1, global.MODEL_TK310 = 2, global.MODEL_TTSP8750P = 3;
 global.MODEL_ARRAY = {
 	1: 'GT08',
 	2: 'TK310',
@@ -29,8 +29,8 @@ global.MODEL_ARRAY = {
 }
 global.MODEL_FILE_ARRAY = {
 	1: 'modelo_GT08',
-	2: 'modelo_GTO8',
-	3: 'modelo_SP8750P'
+	2: 'modelo_TK310',
+	3: 'modelo_SPTT8750P'
 }
 
 var trackers = [];

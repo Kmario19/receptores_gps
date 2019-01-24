@@ -82,7 +82,7 @@ modelo.prepare({
 					segments: [
 						{
 							tipo: MODO_REGEX,
-							regex: /(\d+)(?:\.?\d*),(A|V)?,(\d{4}.\d+)?,(N|S)?,(\d{5}.\d+)?,(W|E)?,(\d+(?:\.\d+)?)?,(\d+(?:\.\d+)?)?,(\d{6})([\w,\*]*)\|(\d+(?:\.\d+)?)\|(\d+(?:\.\d+)?)\|(\w{4})?\|(?:(\w+)?,(\w+))?\|(\d+)?/gi,
+							regex: /(\d+)(?:\.?\d*),(A|V)?,(\d{4}.\d+)?,(N|S)?,(\d{5}.\d+)?,(W|E)?,(\d+(?:\.\d+)?)?,(\d+(?:\.\d+)?)?,(\d{6})([\w,\*]*)\|([-\d]+(?:\.\d+)?)\|(\d+(?:\.\d+)?)\|(\w{4})?\|(?:(\w+)?,(\w+))?\|(\d+)?/gi,
 							matches: {
 								1: {
 									var: SEGM_HORA,
@@ -185,6 +185,7 @@ modelo.prepare({
 		}
 	],
 	after_data: function(t) {
+		t.ES_TRAMA_POSICION = t.CARD_LAT && t.CARD_LNG ? 1 : 0;
 		if (t.CARD_LAT == 'S') {
 			t.LAT = '-' + t.LAT
 		}

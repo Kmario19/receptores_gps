@@ -247,6 +247,7 @@ module.exports = function () {
 							break;
 						default: throw ExceptionProcesamiento("Formato de entrada '" + segment.format_proc + "' incorrecto");
 					}
+					result = result.trim();
 				}
 				if (!segment.format) {
 					log('------------------\n' + segment.var + '\n------------------\nFormat In: ' + FORMAT_ARRAY[segment.format_in] + '(' + str + ')\nFormat Out: ' + FORMAT_ARRAY[segment.format_proc] + '(' + result + ')');
@@ -272,6 +273,7 @@ module.exports = function () {
 		},
 
 		assignVar: function (variable, val) {
+			val = val == null ? '' : val;
 			var t = module.tramas[module.trams_found];
 			switch(variable) {
 				case SEGM_LONGITUD: t.LONGITUD = val; break;
@@ -339,6 +341,8 @@ module.exports = function () {
 				module.process(module.trama, options.segments, true);
 
 				module.after_data();
+
+				log(module.tramas);
 
 				//module.restrictions();
 				
