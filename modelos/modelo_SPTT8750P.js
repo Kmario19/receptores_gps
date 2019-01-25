@@ -14,7 +14,7 @@ modelo.prepare({
 	upper: true,
 	// Identificación de trama general, si no pasa estas reglas, no continúa
 	rules: [
-		{str: '000A081000', start: 4} // Inicio
+		{str: '000A08', start: 4} // Inicio 000A081000 Ó 000A080000 (POSICIÓN)
 	],
 	// Identificación tipos de trama
 	tram_types: [
@@ -35,8 +35,8 @@ modelo.prepare({
 		{
 			tipo: TRAMA_LOGIN,
 			modo: MODO_SUBSTR,
-			str: '5000',
-			start: 22,
+			str: '000A080000',
+			start: 4,
 		},
 		{
 			tipo: TRAMA_RESPUESTA,
@@ -97,7 +97,7 @@ modelo.prepare({
 					segments: [
 						{
 							tipo: MODO_REGEX,
-							regex: /GPRMC,(\d{6})(?:[\.\d]*),(A|V)?,(\d{4}\.\d+)?,(N|S)?,(\d{5}\.\d+)?,(W|E)?,([\d\.]+)?,([\d\.]*),(\d{6})?,([\d\.]*),([\d\.]*),(\w*.+)/gi,
+							regex: /GPRMC,(\d{6})(?:[\.\d]*),(A|V)?,(\d{4}\.\d+)?,(N|S)?,(\d{5}\.\d+)?,(W|E)?,([\d\.]*),([\d\.]*),(\d{6})?,([\d\.]*),([\d\.]*),(\w*.+)/gi,
 							matches: {
 								1: {
 									var: SEGM_HORA,
@@ -224,11 +224,6 @@ modelo.prepare({
 		t.EVENTOS = t.EVENTO;
 		return t;
 	},
-	restrictions: [
-		function (gps) {
-
-		}
-	],
 	buildCommand: function(track, command, value) {
 		var data = '';
 
@@ -242,10 +237,14 @@ modelo.prepare({
             case COMMAND_APAGADO:
                 data = "001300010400004154245454494F434F353D31";
                 break;
-            // Posición actual:
+            // Posición actual
             case COMMAND_POSICION:
                 data = "00190001040000415424545454524745563d31382c312c3235";
-                break;
+				break;
+			// Reiniciar
+			case COMMAND_REINICIO:
+				data = "000900010400004154245245534554";
+				break;
             default:
 				console.warn('Código de comando no implementado');
         }
@@ -253,5 +252,7 @@ modelo.prepare({
         return data;
     }
 });
+
+modelo.exec('0021000a0800000000000120202020202038363130373430323135393538373420');
 
 module.exports = modelo;

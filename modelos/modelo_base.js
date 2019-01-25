@@ -197,6 +197,7 @@ module.exports = function () {
 									//log(match[i]);
 									module.convertVal(match[j], segment.matches[j]);
 								}
+								module.restrictions();
 								if (initial_tram) {
 									module.trams_found++;
 								}
@@ -312,11 +313,25 @@ module.exports = function () {
 		after_data: function () {
 			for (var i in module.tramas) {
 				module.tramas[i] = options.after_data(module.tramas[i]);
+				module.tramas[i] = module.restrictions(module.tramas[i]);
 			}
 		},
 
-		share: function () {
-
+		restrictions: function (t) {
+			if (t.ES_TRAMA_POSICION && !parseInt(t.LAT) && !parseInt(t.LNG)) {
+				t.error = 'RESTRICTION #1: Coordenadas en 0';
+			} else if (parseInt(t.LAT) == 24 && parseInt(t.LNG) == 121) {
+				t.error = 'RESTRICTION #2: Coordenadas en TAIWAN';
+			} else if (t.LAT == '0.0166667') {
+				t.error = 'RESTRICTION #3: Latitud en 1.0';
+			} else if (t.SENAL == 'V' && parseInt(t.VELOCIDAD) > 40) {
+				t.error = 'RESTRICTION #4: Señal V y Velocidad mayor de 40';
+			} else if (parseInt(t.VELOCIDAD) > 130) {
+				t.error = 'RESTRICTION #5: Velocidad mayor a 130Km/h';
+			} else if (t.IGNICION == '0' && parseInt(t.VELOCIDAD) > 80) {
+				t.error = 'RESTRICTION #6: Ignición apagado y Velocidad > a 80'
+			}
+			return t;
 		},
 
 		exec: function (trama) {
@@ -343,10 +358,6 @@ module.exports = function () {
 				module.after_data();
 
 				log(module.tramas);
-
-				//module.restrictions();
-				
-				module.share();
 			} catch(e) {
 				console.error(e);
 			}
@@ -365,6 +376,7 @@ var Trama = function () {
 	this.puerto = '';
 	this.ip = '';
 	this.receptor = '';
+	this.error = '';
 
 	this.ES_TRAMA_POSICION = 0;
 	this.ES_TRAMA_EVENTO = 0;
@@ -401,6 +413,7 @@ var Trama = function () {
 	this.BAT_EXTERNA = '';
 	this.NUM_SATELITES = '';
 	this.DATETIME = '';
+	this.DATETIME_SYS = (new Date((new Date).getTime() - 1.8e+7)).toISOString().replace('T', ' ').substr(0, 19);
 }
 
 function log(str) {

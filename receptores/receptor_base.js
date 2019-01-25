@@ -1,7 +1,11 @@
 var config = require("./../config.json");
 var helpers = require("./../lib/helpers");
 var net = require("net");
-var socket = require('socket.io-client')(config.SOCKET_SERVER+':'+config.SOCKET_PORT, { transports: ['websocket'], rejectUnauthorized: false });
+var socket = require('socket.io-client')(config.SOCKET_SERVER+':'+config.SOCKET_PORT, {
+	transports: ['websocket'],
+	rejectUnauthorized: false
+});
+const { Mongo } = require('./../lib/mongo.js')
 
 socket.on('connect', function () {
 	console.log('Conectado al SOCKET');
@@ -18,6 +22,9 @@ var pool = new Pool({
 	idleTimeoutMillis : 30000
 });
 
+Mongo.connectToMongo();
+console.log(Mongo.db);
+
 /**
  *  MODELOS
  */
@@ -25,7 +32,7 @@ global.MODEL_GT08 = 1, global.MODEL_TK310 = 2, global.MODEL_TTSP8750P = 3;
 global.MODEL_ARRAY = {
 	1: 'GT08',
 	2: 'TK310',
-	3: 'SKYPATROL 8750+'
+	3: 'SP 8750+'
 }
 global.MODEL_FILE_ARRAY = {
 	1: 'modelo_GT08',
@@ -79,10 +86,8 @@ module.exports = function (options) {
 						trama.ip = client.remoteAddress;
 						trama.modelo = MODEL_ARRAY[options.model];
 						socket.emit('trama', trama);
-						if (module.insert_db) {
-							if (!trama.ES_TRAMA_LOGIN && trama.LAT && trama.LNG) {
-								module.send_db(trama);
-							}
+						if (!trama.ES_TRAMA_LOGIN && trama.LAT && trama.LNG) {
+							module.send_db(trama);
 						}
 					}
 				});
@@ -127,17 +132,26 @@ module.exports = function (options) {
 		},
 
 		send_db: function (trama) {
-			pool.connect((err, pgClient, done) => {
-				if (err)
-					return console.error('Error PG connect: ', err);
-
-				pgClient.query('SELECT funseguimientosatelital2($1) as response', [JSON.stringify(trama)], (err, res) => {
+			if (trama.error) {
+				Mongo.insert_error(trama);
+			} else if(!module.insert_db) {
+				Mongo.insert_trama(trama);
+			} else {
+				pool.connect((err, pgClient, done) => {
 					if (err)
-						return console.error('Error PG select: ', err);
-					console.log('%s - %s', trama.IMEI, res.rows[0].response);
-					pgClient.release();
-				})
-			});
+						return console.error('Error PG connect: ', err);
+
+					pgClient.query('SELECT funseguimientosatelital2($1) as response', [JSON.stringify(trama)], (err, res) => {
+						if (err) {
+							trama.error = err;
+							Mongo.insert_error(trama);
+							return console.error('Error PG select: ', err);
+						}
+						console.log('%s - %s', trama.IMEI, res.rows[0].response);
+						pgClient.release();
+					})
+				});
+			}
 		},
 
 		disconnect_track: function(ip, puerto) {

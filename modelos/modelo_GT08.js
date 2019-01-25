@@ -229,11 +229,6 @@ modelo.prepare({
 		t.EVENTOS = t.EVENTOS.join(',');
 		return t;
 	},
-	restrictions: [
-		function (gps) {
-
-		}
-	],
 	buildCommand: function(track, command, value) {
 		var header = "4040";
 		var data = '';

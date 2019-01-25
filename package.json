@@ -27,6 +27,7 @@
   "homepage": "https://github.com/Kmario19/receptores_gps#readme",
   "dependencies": {
     "express": "^4.15.2",
+    "mongodb": "^3.1.13",
     "npm": "^6.4.1",
     "pg": "^7.4.3",
     "socket.io": "^2.1.1"
