@@ -47,6 +47,12 @@ modelo.prepare({
 			start: 22,
 		},
 		{
+			tipo: TRAMA_LOGIN,
+			modo: MODO_SUBSTR,
+			str: '5001',
+			start: 22,
+		},
+		{
 			tipo: TRAMA_RESPUESTA,
 			modo: MODO_REGEX,
 			regex: /2424[0-9A-Z]{4}([0-9]{14})([0-9]{6})[0-9A-Z]{4}0D0A/gi
@@ -266,7 +272,6 @@ modelo.prepare({
                 data = "9001";
                 break;
             default:
-				console.warn('Código de comando no implementado');
 				return '';
         }
 

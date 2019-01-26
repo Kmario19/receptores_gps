@@ -22,9 +22,6 @@ var pool = new Pool({
 	idleTimeoutMillis : 30000
 });
 
-Mongo.connectToMongo();
-console.log(Mongo.db);
-
 /**
  *  MODELOS
  */
@@ -63,6 +60,11 @@ module.exports = function (options) {
 			    throw ex;
 			}
 
+			Mongo.connectToMongo(function () {
+				console.log('Conectado a MONGO');
+				module.send_from_mongo();
+			});
+
 			var server = net.createServer();
 
 			server.on("connection", function (client) {
@@ -88,6 +90,8 @@ module.exports = function (options) {
 						socket.emit('trama', trama);
 						if (!trama.ES_TRAMA_LOGIN && trama.LAT && trama.LNG) {
 							module.send_db(trama);
+						} else if (trama.error) {
+							Mongo.insert_error(trama);
 						}
 					}
 				});
@@ -121,8 +125,10 @@ module.exports = function (options) {
 							client.write(command_send, 'hex');
 							console.log('Comando enviado: ', command_send);
 						} catch(e) {
-							console.log(e);
+							console.log('No se pudo enviar el comando: %s', e);
 						}
+					} else {
+						console.log('Código de comando [%s] no implementado', command);
 					}
 				} else {
 					console.log('No se envio comando, no se encontró cliente');
@@ -131,13 +137,13 @@ module.exports = function (options) {
 
 		},
 
-		send_db: function (trama) {
+		send_db: function (trama, done) {
 			if (trama.error) {
 				Mongo.insert_error(trama);
 			} else if(!module.insert_db) {
 				Mongo.insert_trama(trama);
 			} else {
-				pool.connect((err, pgClient, done) => {
+				pool.connect((err, pgClient) => {
 					if (err)
 						return console.error('Error PG connect: ', err);
 
@@ -145,11 +151,27 @@ module.exports = function (options) {
 						if (err) {
 							trama.error = err;
 							Mongo.insert_error(trama);
+							pgClient.release();
 							return console.error('Error PG select: ', err);
 						}
 						console.log('%s - %s', trama.IMEI, res.rows[0].response);
+						done(res.rows[0].response);
 						pgClient.release();
 					})
+				});
+			}
+		},
+
+		send_from_mongo: function () {
+			if(module.insert_db) {
+				Mongo.db.collection(this.puerto.toString()).find({}, { sort: { '_id' : 1 } }).toArray(function(err, result) {
+					for (let i = 0; i < result.length; i++) {
+						var r = result[i];
+						module.send_db(r, function(send) {
+							console.log(send);
+							if (send && send.substr(0, 2) == 'ok') Mongo.delete_trama(r, module.puerto);
+						});
+					}
 				});
 			}
 		},
@@ -163,7 +185,6 @@ module.exports = function (options) {
 				[ip, puerto, module.puerto], (err, res) => {
 					if (err)
 						return console.error('Error PG select: ', err);
-					console.log('Registrado como desconectado');
 					pgClient.release();
 				})
 			});

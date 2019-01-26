@@ -14,7 +14,7 @@ modelo.prepare({
 	upper: true,
 	// Identificación de trama general, si no pasa estas reglas, no continúa
 	rules: [
-		{str: '000A08', start: 4} // Inicio 000A081000 Ó 000A080000 (POSICIÓN)
+		//{str: '000A08', start: 4} // Inicio 000A081000 Ó 000A080000 (POSICIÓN)
 	],
 	// Identificación tipos de trama
 	tram_types: [
@@ -245,14 +245,10 @@ modelo.prepare({
 			case COMMAND_REINICIO:
 				data = "000900010400004154245245534554";
 				break;
-            default:
-				console.warn('Código de comando no implementado');
         }
 
         return data;
     }
 });
-
-modelo.exec('0021000a0800000000000120202020202038363130373430323135393538373420');
 
 module.exports = modelo;

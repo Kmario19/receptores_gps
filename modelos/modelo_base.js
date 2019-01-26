@@ -197,7 +197,6 @@ module.exports = function () {
 									//log(match[i]);
 									module.convertVal(match[j], segment.matches[j]);
 								}
-								module.restrictions();
 								if (initial_tram) {
 									module.trams_found++;
 								}
@@ -359,7 +358,8 @@ module.exports = function () {
 
 				log(module.tramas);
 			} catch(e) {
-				console.error(e);
+				module.tramas[module.trams_found].error = e.toString();
+				console.error('%s', e);
 			}
 		},
 		buildCommand: function(track, command, value) {
@@ -373,9 +373,10 @@ module.exports = function () {
 var Trama = function () {
 	this.trama = '';
 
-	this.puerto = '';
-	this.ip = '';
 	this.receptor = '';
+	this.ip = '';
+	this.puerto = '';
+	this.modelo = '';
 	this.error = '';
 
 	this.ES_TRAMA_POSICION = 0;
@@ -413,7 +414,7 @@ var Trama = function () {
 	this.BAT_EXTERNA = '';
 	this.NUM_SATELITES = '';
 	this.DATETIME = '';
-	this.DATETIME_SYS = (new Date((new Date).getTime() - 1.8e+7)).toISOString().replace('T', ' ').substr(0, 19);
+	this.DATETIME_SYS = (new Date).toLocaleString().replace(/-(\d)(?!\d)/g, '-0$1');
 }
 
 function log(str) {
