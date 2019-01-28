@@ -221,7 +221,7 @@ modelo.prepare({
 		}
 		time.setTime(time.getTime() - 1.8e+7); //-5 horas
 		t.DATETIME = time.toISOString().replace('T', ' ').substr(0, 19);
-		t.IGNICION = t.EVENTO == 10 ? 1 : 0;
+		t.IGNICION = t.IN_OUTS[3] == '1' || t.EVENTO == 10 ? 1 : 0;
 		t.EVENTOS = t.EVENTO;
 		return t;
 	},
