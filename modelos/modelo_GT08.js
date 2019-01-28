@@ -61,6 +61,7 @@ modelo.prepare({
 	segments: [
 		{
 			when: function (gps) {
+				return true;
 				return gps.ES_TRAMA_POSICION || gps.ES_TRAMA_EVENTO || gps.ES_TRAMA_RESPUESTA;
 			},
 			tipo: MODO_REGEX,
@@ -223,7 +224,7 @@ modelo.prepare({
 			estado_motor = t.IN_OUTS[3];
 		}
 		t.EVENTOS.push(estado_motor);
-		t.IGNICION = estado_motor;
+		t.IGNICION = estado_motor || 0;
 		if (t.IN_OUTS[8] == 1) {
 			t.EVENTOS.push('10'); // Botón de pánico
 		} else {

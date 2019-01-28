@@ -155,7 +155,8 @@ module.exports = function (options) {
 							return console.error('Error PG select: ', err);
 						}
 						console.log('%s - %s', trama.IMEI, res.rows[0].response);
-						done(res.rows[0].response);
+						if (typeof done == 'function')
+							done(res.rows[0].response);
 						pgClient.release();
 					})
 				});

@@ -48,6 +48,7 @@ modelo.prepare({
 	segments: [
 		{
 			when: function (gps) {
+				return true;
 				return gps.ES_TRAMA_POSICION || gps.ES_TRAMA_EVENTO || gps.ES_TRAMA_RESPUESTA;
 			},
 			tipo: MODO_REGEX,
