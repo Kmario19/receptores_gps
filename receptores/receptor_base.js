@@ -89,7 +89,17 @@ module.exports = function (options) {
 						trama.modelo = MODEL_ARRAY[options.model];
 						socket.emit('trama', trama);
 						if (!trama.ES_TRAMA_LOGIN && trama.LAT && trama.LNG) {
-							module.send_db(trama);
+							module.send_db(trama, function (result) {
+								var parts = result.split('|');
+								if (parts[0] == 'ok' && trama.IMEI) {
+									socket.emit('extra_data', {
+										imei: trama.IMEI,
+										placa: parts[1],
+										cliente: parts[2],
+										numero: parts[3]
+									});
+								}
+							});
 						} else if (trama.error) {
 							Mongo.insert_error(trama);
 						}
